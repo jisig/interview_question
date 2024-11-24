@@ -8,17 +8,18 @@ class TestCode extends StatefulWidget {
 }
 
 class _TestCodeState extends State<TestCode> {
-  /// List of icon image paths for the dock
-  List<String> images = [
-    "lib/assets/icons/contact.png",
-    "lib/assets/icons/message.png",
-    "lib/assets/icons/dialler.png",
-    "lib/assets/icons/camera.png",
-    "lib/assets/icons/gallery.png",
+  /// List of icon icon paths for the dock
+
+  List<IconData> icons = [
+    Icons.person,
+    Icons.message,
+    Icons.call,
+    Icons.camera,
+    Icons.photo,
   ];
 
   /// List for icons that are dragged out of the dock
-  List<String> screenImages = [];
+  List<IconData> screenicons = [];
 
   /// Index of the icon currently being dragged
   int? _draggedIndex;
@@ -32,17 +33,11 @@ class _TestCodeState extends State<TestCode> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      /// Used Stack Widget because I want to Use Image in Background instead of color
+      backgroundColor: Colors.black54,
+
+      /// Used Stack Widget for dock alignment at center
       body: Stack(
         children: [
-          /// Background image filling the entire screen
-          Positioned.fill(
-            child: Image.asset(
-              "lib/assets/wallpaper/poster.jpg",
-              fit: BoxFit.cover,
-            ),
-          ),
-
           /// DragTarget for handling icons dragged out of the dock
           DragTarget<int>(
             onWillAcceptWithDetails: (fromIndex) => true, // Accept all drags
@@ -50,8 +45,8 @@ class _TestCodeState extends State<TestCode> {
               setState(
                 () {
                   /// Move the dragged icon to the screen
-                  if (fromIndex < images.length) {
-                    screenImages.add(images.removeAt(fromIndex));
+                  if (fromIndex < icons.length) {
+                    screenicons.add(icons.removeAt(fromIndex));
                   }
                 },
               );
@@ -61,37 +56,50 @@ class _TestCodeState extends State<TestCode> {
                 margin: EdgeInsets.only(bottom: 80),
                 child: Stack(
                   children: List.generate(
-                    screenImages.length,
+                    screenicons.length,
 
                     /// Used For to Arrange Icons in Horizontal Position
                     (index) => Positioned(
                       left: 100 + (index * 60).toDouble(),
                       top: 100,
                       child: LongPressDraggable<int>(
+                        data: icons.length + index,
                         feedback: Material(
                           color: Colors.transparent,
 
                           /// Show Which Icon is Dragged
-                          child: Image.asset(
-                            screenImages[index],
-                            width: 70,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.green,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                             height: 70,
-                            fit: BoxFit.cover,
+                            width: 70,
+                            child: Icon(
+                              screenicons[index],
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                         childWhenDragging: Opacity(
                           opacity: 0.4,
-                          child: Image.asset(
-                            screenImages[index],
-                            width: 60,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.green,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                             height: 60,
-                            fit: BoxFit.cover,
+                            width: 60,
+                            child: Icon(
+                              screenicons[index],
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                         onDragStarted: () {
                           setState(
                             () {
-                              _draggedIndex = images.length + index;
+                              _draggedIndex = icons.length + index;
                             },
                           );
                         },
@@ -103,11 +111,18 @@ class _TestCodeState extends State<TestCode> {
                             },
                           );
                         },
-                        child: Image.asset(
-                          screenImages[index],
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.green,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                           width: 60,
                           height: 60,
-                          fit: BoxFit.cover,
+                          child: Icon(
+                            screenicons[index],
+                            size: 30.0,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
@@ -138,7 +153,7 @@ class _TestCodeState extends State<TestCode> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: List.generate(
-                    images.length,
+                    icons.length,
                     (index) {
                       /// Check is Cursor is on Icon
                       final isHovered = _hoveredIndex == index;
@@ -162,15 +177,15 @@ class _TestCodeState extends State<TestCode> {
                         onAccept: (fromIndex) {
                           setState(
                             () {
-                              if (fromIndex < images.length) {
+                              if (fromIndex < icons.length) {
                                 /// used to Move icon within the dock
-                                final image = images.removeAt(fromIndex);
-                                images.insert(index, image);
+                                final icon = icons.removeAt(fromIndex);
+                                icons.insert(index, icon);
                               } else {
                                 /// used to Move icon from screen back to the dock
-                                final screenIndex = fromIndex - images.length;
-                                images.insert(
-                                    index, screenImages.removeAt(screenIndex));
+                                final screenIndex = fromIndex - icons.length;
+                                icons.insert(
+                                    index, screenicons.removeAt(screenIndex));
                               }
 
                               /// Reset All Icons Index After Icons Dropped
@@ -190,21 +205,35 @@ class _TestCodeState extends State<TestCode> {
                               /// Store Dragged Icon index so That Icon will Stay on Place after it get dropped
                               data: index,
                               feedback: Material(
-                                color: Colors.transparent,
-                                child: Image.asset(
-                                  images[index],
-                                  width: 60.0,
-                                  height: 60.0,
-                                  fit: BoxFit.cover,
+                                color: Colors.white,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.green,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  width: 60,
+                                  height: 60,
+                                  child: Icon(
+                                    icons[index],
+                                    size: isHovered ? 70.0 : 30.0,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
                               childWhenDragging: Opacity(
                                 opacity: 0.4,
-                                child: Image.asset(
-                                  images[index],
-                                  width: 50.0,
-                                  height: 50.0,
-                                  fit: BoxFit.cover,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.green,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  height: 50,
+                                  width: 50,
+                                  child: Icon(
+                                    icons[index],
+                                    size: isHovered ? 70.0 : 30.0,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
                               onDragStarted: () => setState(
@@ -222,7 +251,7 @@ class _TestCodeState extends State<TestCode> {
                               child: GestureDetector(
                                 onTap: () {
                                   /// Print Clicked Icon Index
-                                  print("Image $index Clicked");
+                                  print("icon $index Clicked");
                                 },
                                 child: MouseRegion(
                                   onEnter: (_) => setState(
@@ -244,11 +273,18 @@ class _TestCodeState extends State<TestCode> {
                                     height: isHovered ? 70.0 : 50.0,
 
                                     /// show which icon is Hovered
-                                    child: Image.asset(
-                                      images[index],
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.green,
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
                                       width: isHovered ? 70.0 : 50.0,
                                       height: isHovered ? 70.0 : 50.0,
-                                      fit: BoxFit.cover,
+                                      child: Icon(
+                                        icons[index],
+                                        size: isHovered ? 50.0 : 30.0,
+                                        color: Colors.white,
+                                      ),
                                     ),
                                   ),
                                 ),
